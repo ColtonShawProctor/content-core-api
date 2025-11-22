@@ -5,7 +5,8 @@ services:
     build: .
     container_name: content-core-api
     restart: unless-stopped
-    # Port mapping handled by Coolify - don't specify here
+    ports:
+      - "8888:8888"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
