@@ -1,0 +1,94 @@
+# Content Core Configuration
+# This file configures the behavior of content-core library
+
+# Extraction settings
+extraction:
+  # Default document engine (auto, simple, docling)
+  document_engine: auto
+  
+  # Default URL engine (auto, simple, firecrawl, jina)  
+  url_engine: auto
+  
+  # PyMuPDF specific settings
+  pymupdf:
+    enable_formula_ocr: false
+    formula_threshold: 3
+    ocr_fallback: true
+    
+  # Docling specific settings
+  docling:
+    output_format: markdown  # markdown, html, json
+    enable_table_detection: true
+    enable_equation_detection: true
+    
+  # Firecrawl settings
+  firecrawl:
+    timeout: 30
+    wait_for_selector: null
+    
+  # Jina settings
+  jina:
+    timeout: 30
+    return_format: text  # text, markdown, html
+
+# AI/LLM settings
+ai:
+  # Default model for summarization
+  default_model: gpt-4-turbo-preview
+  
+  # Temperature for generation
+  temperature: 0.7
+  
+  # Maximum tokens for summaries
+  max_summary_tokens: 500
+  
+  # Available models (in order of preference)
+  models:
+    - gpt-4-turbo-preview
+    - gpt-3.5-turbo
+    - claude-3-opus
+    - gemini-pro
+
+# Media processing settings
+media:
+  # Audio transcription settings
+  audio:
+    model: whisper-1
+    language: en
+    
+  # Video processing settings  
+  video:
+    extract_audio: true
+    max_duration: 3600  # seconds
+    
+# Content cleaning settings
+cleaning:
+  remove_extra_whitespace: true
+  remove_brackets: true
+  fix_encoding: true
+  normalize_quotes: true
+
+# Summarization contexts
+summarization:
+  contexts:
+    bullet_points: "Summarize in bullet points"
+    executive_summary: "Provide an executive summary"
+    action_items: "Extract action items"
+    key_takeaways: "List the key takeaways"
+    technical_summary: "Provide a technical summary"
+    simple_explanation: "Explain in simple terms"
+    one_sentence: "Summarize in one sentence"
+    detailed_analysis: "Provide a detailed analysis"
+    pros_and_cons: "List pros and cons"
+
+# Logging settings
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  
+# Performance settings
+performance:
+  max_file_size: 104857600  # 100MB in bytes
+  chunk_size: 8192
+  async_timeout: 60
+  max_retries: 3

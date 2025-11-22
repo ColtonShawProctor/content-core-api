@@ -44,7 +44,7 @@ tmp/
 *.tmp
 
 # Config (keep templates)
-cc_config.yaml
+# cc_config.yaml - commented out so it gets committed to repo
 !cc_config.yaml.example
 
 # Logs
