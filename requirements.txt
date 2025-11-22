@@ -1,0 +1,43 @@
+# Core framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Content Core with enhanced document processing
+content-core[docling]==0.1.9
+
+# Additional extraction engines (optional)
+beautifulsoup4==4.12.3
+jina==3.25.1
+firecrawl-py==0.0.16
+
+# AI/LLM providers
+openai==1.10.0
+anthropic==0.18.1
+google-generativeai==0.3.2
+
+# Document processing
+PyMuPDF==1.23.21
+python-docx==1.1.0
+openpyxl==3.1.2
+python-pptx==0.6.23
+ebooklib==0.18
+pdfplumber==0.10.3
+
+# Media processing
+moviepy==1.0.3
+pydub==0.25.1
+SpeechRecognition==3.10.1
+
+# Image processing and OCR
+pillow==10.2.0
+pytesseract==0.3.10
+
+# Utilities
+python-dotenv==1.0.0
+aiofiles==23.2.1
+httpx==0.26.0
+tenacity==8.2.3
+
+# For async operations
+aiohttp==3.9.3
