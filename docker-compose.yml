@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  content-core-api:
+    build: .
+    container_name: content-core-api
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      # API Keys (configure in Coolify environment variables)
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      
+      # Firecrawl API (if using)
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY}
+      - FIRECRAWL_API_URL=${FIRECRAWL_API_URL:-https://api.firecrawl.dev}
+      
+      # Jina API (if using)
+      - JINA_API_KEY=${JINA_API_KEY}
+      
+      # Engine Configuration
+      - CCORE_DOCUMENT_ENGINE=${CCORE_DOCUMENT_ENGINE:-auto}
+      - CCORE_URL_ENGINE=${CCORE_URL_ENGINE:-auto}
+      
+      # Docling Configuration
+      - DOCLING_OUTPUT_FORMAT=${DOCLING_OUTPUT_FORMAT:-markdown}
+      
+      # OCR Configuration
+      - ENABLE_FORMULA_OCR=${ENABLE_FORMULA_OCR:-false}
+      - FORMULA_THRESHOLD=${FORMULA_THRESHOLD:-3}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      
+      # API Configuration
+      - WORKERS=${WORKERS:-1}
+      - MAX_UPLOAD_SIZE=${MAX_UPLOAD_SIZE:-100}  # MB
+    
+    volumes:
+      # Persistent storage for temporary files
+      - ./uploads:/tmp/uploads
+      # Optional: Mount custom prompts directory
+      - ./prompts:/app/prompts
+      # Optional: Mount config file
+      - ./cc_config.yaml:/app/cc_config.yaml
+    
+    labels:
+      # Coolify labels for automatic detection
+      - "coolify.managed=true"
+      - "coolify.type=application"
+      - "coolify.name=content-core-api"
+      
+    networks:
+      - coolify
+      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  coolify:
+    external: true
+    name: coolify

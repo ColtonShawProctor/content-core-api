@@ -1,0 +1,223 @@
+{
+  "name": "Content Core API Integration",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://your-content-core.coolify.app/extract",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "url",
+              "value": "https://example.com/sample-document.pdf"
+            },
+            {
+              "name": "output_format",
+              "value": "markdown"
+            },
+            {
+              "name": "document_engine",
+              "value": "auto"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "extract_content",
+      "name": "Extract Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "notes": "Extract content from URL or document"
+    },
+    {
+      "parameters": {
+        "url": "https://your-content-core.coolify.app/clean",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "content",
+              "value": "={{$json.content}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "clean_content",
+      "name": "Clean Content",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300],
+      "notes": "Clean extracted content"
+    },
+    {
+      "parameters": {
+        "url": "https://your-content-core.coolify.app/summarize",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "content",
+              "value": "={{$json.cleaned_content}}"
+            },
+            {
+              "name": "context",
+              "value": "bullet points"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "summarize_bullets",
+      "name": "Summarize (Bullets)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200],
+      "notes": "Generate bullet point summary"
+    },
+    {
+      "parameters": {
+        "url": "https://your-content-core.coolify.app/summarize",
+        "method": "POST",
+        "bodyParametersUi": {
+          "parameter": [
+            {
+              "name": "content",
+              "value": "={{$node['Clean Content'].json.cleaned_content}}"
+            },
+            {
+              "name": "context",
+              "value": "action items"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "summarize_actions",
+      "name": "Summarize (Actions)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 400],
+      "notes": "Extract action items"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "merge_summaries",
+      "name": "Merge Summaries",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine all results into a structured output\nconst originalContent = $input.all()[0].json.content;\nconst bulletSummary = $input.all()[0].json.summary;\nconst actionItems = $input.all()[1].json.summary;\n\nreturn {\n  json: {\n    source: items[0].json.source || 'unknown',\n    extraction: {\n      success: true,\n      content_length: originalContent.length,\n      content_preview: originalContent.substring(0, 500) + '...'\n    },\n    summaries: {\n      bullet_points: bulletSummary,\n      action_items: actionItems\n    },\n    metadata: {\n      processed_at: new Date().toISOString(),\n      workflow: 'Content Core Processing'\n    }\n  }\n};"
+      },
+      "id": "format_output",
+      "name": "Format Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300],
+      "notes": "Structure the final output"
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Content": {
+      "main": [
+        [
+          {
+            "node": "Clean Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Content": {
+      "main": [
+        [
+          {
+            "node": "Summarize (Bullets)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Summarize (Actions)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize (Bullets)": {
+      "main": [
+        [
+          {
+            "node": "Merge Summaries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize (Actions)": {
+      "main": [
+        [
+          {
+            "node": "Merge Summaries",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Summaries": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateId": "content-core-integration"
+  },
+  "tags": [
+    {
+      "name": "Content Processing",
+      "createdAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "notes": "# Content Core API Integration\n\nThis workflow demonstrates how to:\n1. Extract content from URLs or documents\n2. Clean the extracted content\n3. Generate multiple summary types\n4. Combine results into structured output\n\n## Setup\n1. Replace 'your-content-core.coolify.app' with your actual API URL\n2. Ensure your Content Core API is running with proper API keys\n3. Test with different URLs and document types\n\n## Supported Inputs\n- Web pages (HTML)\n- PDFs, Word docs, Excel files\n- Videos (with transcription)\n- Images (with OCR)"
+}
