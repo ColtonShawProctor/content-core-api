@@ -35,12 +35,12 @@ COPY cc_config.yaml .
 # Create temp directory
 RUN mkdir -p /tmp/uploads
 
-# Expose port
-EXPOSE 8000
+# Expose port (default 3000, can be overridden by PORT env var)
+EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
+    CMD sh -c "curl -f http://localhost:${PORT:-3000}/health || exit 1"
 
-# Run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application (PORT env var can be set to change the port)
+CMD sh -c "uvicorn app:app --host 0.0.0.0 --port ${PORT:-3000}"
