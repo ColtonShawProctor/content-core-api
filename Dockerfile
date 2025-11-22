@@ -13,22 +13,22 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
-# Install ALL Python dependencies directly (no requirements.txt needed)
+# Install Python dependencies with LATEST content-core version
 RUN pip install --no-cache-dir \
     fastapi==0.109.0 \
     uvicorn[standard]==0.27.0 \
     python-multipart==0.0.6 \
-    content-core==0.1.9 \
-    openai==1.10.0 \
-    anthropic==0.18.1 \
-    google-generativeai==0.3.2 \
-    beautifulsoup4==4.12.3 \
-    PyMuPDF==1.23.21 \
-    python-dotenv==1.0.0 \
-    aiofiles==23.2.1 \
-    httpx==0.26.0
+    content-core==1.7.0 \
+    openai \
+    anthropic \
+    google-generativeai \
+    beautifulsoup4 \
+    PyMuPDF \
+    python-dotenv \
+    aiofiles \
+    httpx
 
-# Copy application code only (no requirements.txt needed)
+# Copy application code
 COPY app.py .
 
 # Create temp directory
