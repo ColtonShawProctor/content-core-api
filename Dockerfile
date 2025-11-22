@@ -28,8 +28,9 @@ RUN pip install --no-cache-dir \
     aiofiles \
     httpx
 
-# Copy application code
+# Copy application code and config
 COPY app.py .
+COPY cc_config.yaml .
 
 # Create temp directory
 RUN mkdir -p /tmp/uploads
