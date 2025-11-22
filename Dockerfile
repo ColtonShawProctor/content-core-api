@@ -6,28 +6,35 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     curl \
     git \
-    ffmpeg \
-    tesseract-ocr \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Python environment variables
+# Set Python environment variables  
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
-# Copy requirements first for better Docker layer caching
-COPY requirements.txt .
+# Install ALL Python dependencies directly (no requirements.txt needed)
+RUN pip install --no-cache-dir \
+    fastapi==0.109.0 \
+    uvicorn[standard]==0.27.0 \
+    python-multipart==0.0.6 \
+    content-core==0.1.9 \
+    openai==1.10.0 \
+    anthropic==0.18.1 \
+    google-generativeai==0.3.2 \
+    beautifulsoup4==4.12.3 \
+    PyMuPDF==1.23.21 \
+    python-dotenv==1.0.0 \
+    aiofiles==23.2.1 \
+    httpx==0.26.0
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy application code
+# Copy application code only (no requirements.txt needed)
 COPY app.py .
 
-# Create temp directory for uploads
+# Create temp directory
 RUN mkdir -p /tmp/uploads
 
-# Expose port for Coolify
+# Expose port
 EXPOSE 8000
 
 # Health check
